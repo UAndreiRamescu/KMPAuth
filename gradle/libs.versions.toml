@@ -27,6 +27,7 @@ androidLegacyPlayServices = "21.2.0"
 nexusPublish = "2.0.0"
 ktor = "3.0.0"
 kotlinx-serialization = "1.7.3"
+facebook-login = "18.0.3"
 
 
 [libraries]
@@ -57,6 +58,9 @@ androidx-credentials = { module = "androidx.credentials:credentials", version.re
 androidx-credentials-playServicesAuth = { module = "androidx.credentials:credentials-play-services-auth", version.ref = "androidxCredential" }
 android-legacy-playServicesAuth = { module = "com.google.android.gms:play-services-auth", version.ref = "androidLegacyPlayServices" }
 googleIdIdentity = { module = "com.google.android.libraries.identity.googleid:googleid", version.ref = "googleIdIdentity" }
+
+#Facebook
+facebook-login = { module = "com.facebook.android:facebook-login", version.ref = "facebook-login" }
 
 #Firebase
 firebase-gitlive-auth = { module = "dev.gitlive:firebase-auth", version.ref = "firebaseGitLiveAuth" }

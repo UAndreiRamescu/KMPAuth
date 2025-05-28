@@ -34,12 +34,16 @@ kotlin {
             baseName = "KMPAuthFirebaseCore"
             isStatic = true
         }
-        noPodspec()
+        pod("FacebookLogin")
     }
 
 
 
     sourceSets {
+        androidMain.dependencies {
+            implementation(libs.facebook.login)
+        }
+
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)

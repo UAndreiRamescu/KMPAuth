@@ -24,11 +24,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mmk.kmpauth.firebase.apple.AppleButtonUiContainer
+import com.mmk.kmpauth.firebase.facebook.FacebookButtonUiContainer
 import com.mmk.kmpauth.firebase.github.GithubButtonUiContainer
 import com.mmk.kmpauth.firebase.google.GoogleButtonUiContainerFirebase
 import com.mmk.kmpauth.google.GoogleButtonUiContainer
 import com.mmk.kmpauth.uihelper.apple.AppleSignInButton
 import com.mmk.kmpauth.uihelper.apple.AppleSignInButtonIconOnly
+import com.mmk.kmpauth.uihelper.facebook.FacebookSignInButton
 import com.mmk.kmpauth.uihelper.google.GoogleSignInButton
 import com.mmk.kmpauth.uihelper.google.GoogleSignInButtonIconOnly
 import dev.gitlive.firebase.auth.FirebaseUser
@@ -116,6 +118,10 @@ fun AuthUiHelperButtonsAndFirebaseAuth(
         //Apple Sign-In Button and authentication with Firebase
         AppleButtonUiContainer(onResult = onFirebaseResult, linkAccount = false) {
             AppleSignInButton(modifier = Modifier.fillMaxWidth().height(44.dp)) { this.onClick() }
+        }
+
+        FacebookButtonUiContainer(onResult = onFirebaseResult, linkAccount = false) {
+            FacebookSignInButton(modifier = Modifier.fillMaxWidth().height(44.dp)) { this.onClick() }
         }
 
     }
