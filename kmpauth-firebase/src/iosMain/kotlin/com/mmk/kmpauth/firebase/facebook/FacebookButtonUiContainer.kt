@@ -15,6 +15,7 @@ import dev.gitlive.firebase.auth.auth
 import kotlinx.cinterop.ObjCAction
 import platform.Foundation.NSError
 import platform.UIKit.UIApplication
+import cocoapods.FacebookCore.*
 import cocoapods.FacebookLogin.*
 import kotlinx.coroutines.launch
 
@@ -32,24 +33,24 @@ public actual fun FacebookButtonUiContainer(
         object : UiContainerScope {
             override fun onClick() {
                 val loginManager = LoginManager()
-                loginManager.logInWithPermissions(
+                loginManager.logIn(
                     permissions = listOf("email", "public_profile"),
                     fromViewController = UIApplication.sharedApplication.keyWindow?.rootViewController
                 ) { result: LoginManagerLoginResult?, error: NSError? ->
                     if (error != null) {
                         updatedOnResult(Result.failure(IllegalStateException("Facebook login error: ${error.localizedDescription}")))
-                        return@logInWithPermissions
+                        return@logIn
                     }
 
                     if (result?.isCancelled == true) {
                         updatedOnResult(Result.failure(IllegalStateException("Facebook login cancelled")))
-                        return@logInWithPermissions
+                        return@logIn
                     }
 
                     val accessToken = result?.token?.tokenString
                     if (accessToken == null) {
                         updatedOnResult(Result.failure(IllegalStateException("Facebook access token is null")))
-                        return@logInWithPermissions
+                        return@logIn
                     }
 
                     val authCredential = FacebookAuthProvider.credential(accessToken)
