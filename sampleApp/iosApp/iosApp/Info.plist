@@ -2,22 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-
-    <key>GIDServerClientID</key>
-        <string>180951249266-9cn8vatdnto1q3t3phfivvf0b5e453bf.apps.googleusercontent.com</string>
-
-        <key>GIDClientID</key>
-        <string>180951249266-2b7bbk93d0od5nd5spi3piptb2udv7ll.apps.googleusercontent.com</string>
-        <key>CFBundleURLTypes</key>
-        <array>
-          <dict>
-            <key>CFBundleURLSchemes</key>
-            <array>
-              <string>com.googleusercontent.apps.180951249266-2b7bbk93d0od5nd5spi3piptb2udv7ll</string>
-            </array>
-          </dict>
-        </array>
-
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleExecutable</key>
@@ -45,6 +31,10 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
+	<key>GIDClientID</key>
+	<string>180951249266-2b7bbk93d0od5nd5spi3piptb2udv7ll.apps.googleusercontent.com</string>
+	<key>GIDServerClientID</key>
+	<string>180951249266-9cn8vatdnto1q3t3phfivvf0b5e453bf.apps.googleusercontent.com</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIApplicationSceneManifest</key>
@@ -71,7 +61,5 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>CADisableMinimumFrameDurationOnPhone</key>
-    <true/>
 </dict>
 </plist>

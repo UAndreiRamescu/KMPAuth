@@ -39,6 +39,7 @@ kotlin {
             baseName = "KMPAuthFirebaseCore"
             isStatic = true
         }
+        pod("FacebookCore")
         pod("FacebookLogin")
     }
 

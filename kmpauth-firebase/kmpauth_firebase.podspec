@@ -9,6 +9,7 @@ Pod::Spec.new do |spec|
     spec.vendored_frameworks      = 'build/cocoapods/framework/KMPAuthFirebaseCore.framework'
     spec.libraries                = 'c++'
     spec.ios.deployment_target    = '11.0'
+    spec.dependency 'FacebookCore'
     spec.dependency 'FacebookLogin'
                 
     if !Dir.exist?('build/cocoapods/framework/KMPAuthFirebaseCore.framework') || Dir.empty?('build/cocoapods/framework/KMPAuthFirebaseCore.framework')

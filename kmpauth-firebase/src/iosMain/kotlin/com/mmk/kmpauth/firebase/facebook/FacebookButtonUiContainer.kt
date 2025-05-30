@@ -4,64 +4,20 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
-import cocoapods.FirebaseAuth.FIRAuth
-import cocoapods.FirebaseAuth.FIRAuthDataResult
-import cocoapods.FirebaseAuth.FIROAuthProvider
 import com.mmk.kmpauth.core.UiContainerScope
 import dev.gitlive.firebase.Firebase
+import dev.gitlive.firebase.auth.FacebookAuthProvider
 import dev.gitlive.firebase.auth.FirebaseUser
 import dev.gitlive.firebase.auth.auth
-import kotlinx.cinterop.BetaInteropApi
-import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.cinterop.UByteVar
-import kotlinx.cinterop.addressOf
-import kotlinx.cinterop.allocArray
-import kotlinx.cinterop.convert
-import kotlinx.cinterop.memScoped
-import kotlinx.cinterop.readBytes
-import kotlinx.cinterop.refTo
-import kotlinx.cinterop.usePinned
-import platform.AuthenticationServices.ASAuthorization
-import platform.AuthenticationServices.ASAuthorizationController
-import platform.AuthenticationServices.ASAuthorizationControllerDelegateProtocol
-import platform.AuthenticationServices.ASAuthorizationControllerPresentationContextProvidingProtocol
-import platform.AuthenticationServices.ASAuthorizationScopeEmail
-import platform.AuthenticationServices.ASAuthorizationScopeFullName
-import platform.AuthenticationServices.ASPresentationAnchor
-import platform.CoreCrypto.CC_SHA256
-import platform.CoreCrypto.CC_SHA256_DIGEST_LENGTH
+import kotlinx.cinterop.ObjCAction
 import platform.Foundation.NSError
-import platform.Foundation.NSString
-import platform.Foundation.NSUTF8StringEncoding
-import platform.Foundation.create
-import platform.Security.SecRandomCopyBytes
-import platform.Security.errSecSuccess
-import platform.Security.kSecRandomDefault
 import platform.UIKit.UIApplication
-import platform.darwin.NSObject
+import cocoapods.FacebookLogin.*
+import kotlinx.coroutines.launch
 
-private var currentNonce: String? = null
-
-/**
- * FacebookButton Ui Container Composable that handles all sign-in functionality for Facebook.
- * Child of this Composable can be any view or Composable function.
- * You need to call [UiContainerScope.onClick] function on your child view's click function.
- *
- * [onResult] callback will return [Result] with [FirebaseUser] type.
- * @param requestScopes list of request scopes type of [FacebookSignInRequestScope].
- * @param linkAccount if true, it will link the account with the current user. Default value is false
- * Example Usage:
- * ```
- * //Facebook Sign-In with Custom Button and authentication with Firebase
- * FacebookButtonUiContainer(onResult = onFirebaseResult) {
- *     Button(onClick = { this.onClick() }) { Text("Facebook Sign-In (Custom Design)") }
- * }
- *
- * ```
- *
- */
 @Composable
 public actual fun FacebookButtonUiContainer(
     modifier: Modifier,
@@ -70,21 +26,54 @@ public actual fun FacebookButtonUiContainer(
     linkAccount: Boolean,
     content: @Composable UiContainerScope.() -> Unit,
 ) {
-    val updatedOnResultFunc by rememberUpdatedState(onResult)
-
+    val updatedOnResult by rememberUpdatedState(onResult)
+    val coroutineScope = rememberCoroutineScope()
     val uiContainerScope = remember {
         object : UiContainerScope {
             override fun onClick() {
-                signIn(
-                    requestScopes = requestScopes,
+                val loginManager = LoginManager()
+                loginManager.logInWithPermissions(
+                    permissions = listOf("email", "public_profile"),
+                    fromViewController = UIApplication.sharedApplication.keyWindow?.rootViewController
+                ) { result: LoginManagerLoginResult?, error: NSError? ->
+                    if (error != null) {
+                        updatedOnResult(Result.failure(IllegalStateException("Facebook login error: ${error.localizedDescription}")))
+                        return@logInWithPermissions
+                    }
 
-                )
+                    if (result?.isCancelled == true) {
+                        updatedOnResult(Result.failure(IllegalStateException("Facebook login cancelled")))
+                        return@logInWithPermissions
+                    }
+
+                    val accessToken = result?.token?.tokenString
+                    if (accessToken == null) {
+                        updatedOnResult(Result.failure(IllegalStateException("Facebook access token is null")))
+                        return@logInWithPermissions
+                    }
+
+                    val authCredential = FacebookAuthProvider.credential(accessToken)
+                    coroutineScope.launch {
+                        try {
+                            val auth = Firebase.auth
+                            val currentUser = auth.currentUser
+                            val firebaseResult = if (linkAccount && currentUser != null) {
+                                currentUser.linkWithCredential(authCredential)
+                            } else {
+                                auth.signInWithCredential(authCredential)
+                            }
+                            if (firebaseResult.user == null) updatedOnResult(Result.failure(IllegalStateException("Firebase Null user")))
+                            else updatedOnResult(Result.success(firebaseResult.user))
+                            print("Facebook sign-in successful: ${firebaseResult.user?.uid}")
+                        } catch (e: Exception) {
+                            updatedOnResult(Result.failure(e))
+                        }
+                    }
+                }
             }
-
         }
     }
     Box(modifier = modifier) { uiContainerScope.content() }
-
 }
 
 @Deprecated(
@@ -101,12 +90,3 @@ public actual fun FacebookButtonUiContainer(
 ) {
     FacebookButtonUiContainer(modifier, requestScopes, onResult, false, content)
 }
-
-private fun signIn(
-    requestScopes: List<FacebookSignInRequestScope>,
-) {
-
-}
-
-
-
